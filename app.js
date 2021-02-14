@@ -1,184 +1,184 @@
-const imagesArea = document.querySelector('.images');
-const gallery = document.querySelector('.gallery');
-const galleryHeader = document.querySelector('.gallery-header');
-const searchBtn = document.getElementById('search-btn');
-const sliderBtn = document.getElementById('create-slider');
-const sliderContainer = document.getElementById('sliders');
-const searchField = document.getElementById('search');
-const loaderArea = document.getElementById('loader');
-const notFoundArea = document.getElementById('not-found');
+// starting part
+const imagesArea = document.querySelector(".images");
+const gallery = document.querySelector(".gallery");
+const galleryHeader = document.querySelector(".gallery-header");
+const searchBtn = document.getElementById("search-btn");
+const sliderBtn = document.getElementById("create-slider");
+const sliderContainer = document.getElementById("sliders");
+const searchField = document.getElementById("search");
+const loaderArea = document.getElementById("loader");
+const notFoundArea = document.getElementById("not-found");
 
-// selected image 
+// selected image
 let sliders = [];
-
 
 // If this key doesn't work
 // Find the name in the url and go to their website
 // to create your own api key
-const KEY = '15674931-a9d714b6e9d654524df198e00&q';
+const KEY = "15674931-a9d714b6e9d654524df198e00&q";
 
-// show images 
+// show images
 const showImages = (images) => {
-  imagesArea.style.display = 'block';
-  gallery.innerHTML = '';
+  imagesArea.style.display = "block";
+  gallery.innerHTML = "";
   // show gallery title
-  galleryHeader.style.display = 'flex';
-  images.forEach(image => {
-    let div = document.createElement('div');
-    div.className = 'col-lg-3 col-md-4 col-xs-6 img-item mb-2';
+  galleryHeader.style.display = "flex";
+  images.forEach((image) => {
+    let div = document.createElement("div");
+    div.className = "col-lg-3 col-md-4 col-xs-6 img-item mb-2";
     div.innerHTML = ` <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">`;
-    gallery.appendChild(div)
-  })
-
-}
+    gallery.appendChild(div);
+  });
+};
 
 const getImages = (query) => {
-  showNotFoundMessage(false)
-  showLoader(true)
-  fetch(`https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`)
-    .then(response => response.json())
-    .then(data => {
-      showLoader(false)
+  showNotFoundMessage(false);
+  showLoader(true);
+  fetch(
+    `https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      showLoader(false);
       if (data.total > 0) {
-        showImages(data.hits)
+        showImages(data.hits);
       } else {
-        showNotFoundMessage(true)
+        showNotFoundMessage(true);
       }
     })
-    .catch(err => console.log(err))
-
-}
+    .catch((err) => console.log(err));
+};
 
 let slideIndex = 0;
 const selectItem = (event, img) => {
   let element = event.target;
-  element.classList.add('added');
- 
+  element.classList.add("added");
+
   let item = sliders.indexOf(img);
   if (item === -1) {
     sliders.push(img);
   } else {
-    sliders.splice(item,1)
-    element.classList.remove('added')
+    sliders.splice(item, 1);
+    element.classList.remove("added");
   }
-}
-var timer
+};
+var timer;
 const createSlider = () => {
   // check slider image length
   if (sliders.length < 2) {
-    alert('Select at least 2 image.')
+    alert("Select at least 2 image.");
     return;
   }
   // crate slider previous next area
-  sliderContainer.innerHTML = '';
-  const prevNext = document.createElement('div');
-  prevNext.className = "prev-next d-flex w-100 justify-content-between align-items-center";
+  sliderContainer.innerHTML = "";
+  const prevNext = document.createElement("div");
+  prevNext.className =
+    "prev-next d-flex w-100 justify-content-between align-items-center";
   prevNext.innerHTML = ` 
   <span class="prev" onclick="changeItem(-1)"><i class="fas fa-chevron-left"></i></span>
   <span class="next" onclick="changeItem(1)"><i class="fas fa-chevron-right"></i></span>
   `;
 
-  sliderContainer.appendChild(prevNext)
-  document.querySelector('.main').style.display = 'block';
+  sliderContainer.appendChild(prevNext);
+  document.querySelector(".main").style.display = "block";
   // hide image aria
-  imagesArea.style.display = 'none';
+  imagesArea.style.display = "none";
 
-  const durationInput = document.getElementById('duration').value;
-  const duration =  durationInput >= 1000 ? durationInput : 1000;
+  const durationInput = document.getElementById("duration").value;
+  const duration = durationInput >= 1000 ? durationInput : 1000;
 
-  sliders.forEach(slide => {
-    let item = document.createElement('div')
+  sliders.forEach((slide) => {
+    let item = document.createElement("div");
     item.className = "slider-item";
     item.innerHTML = `<img class="w-100"
     src="${slide}"
     alt="">`;
-    sliderContainer.appendChild(item)
-  })
-  changeSlide(0)
+    sliderContainer.appendChild(item);
+  });
+  changeSlide(0);
   timer = setInterval(function () {
     slideIndex++;
     changeSlide(slideIndex);
   }, duration);
-}
+};
 
-// change slider index 
-const changeItem = index => {
-  changeSlide(slideIndex += index);
-}
+// change slider index
+const changeItem = (index) => {
+  changeSlide((slideIndex += index));
+};
 
 // change slide item
 const changeSlide = (index) => {
-
-  const items = document.querySelectorAll('.slider-item');
+  const items = document.querySelectorAll(".slider-item");
   if (index < 0) {
-    slideIndex = items.length - 1
+    slideIndex = items.length - 1;
     index = slideIndex;
-  };
+  }
 
   if (index >= items.length) {
     index = 0;
     slideIndex = 0;
   }
 
-  items.forEach(item => {
-    item.style.display = "none"
-  })
+  items.forEach((item) => {
+    item.style.display = "none";
+  });
 
-  items[index].style.display = "block"
-}
+  items[index].style.display = "block";
+};
 // Trigger search after click search button
-searchBtn.addEventListener('click', function () {
-  search()
-})
+searchBtn.addEventListener("click", function () {
+  search();
+});
 // Trigger search after hit enter
-searchField.addEventListener('keypress', function(event){
-  event.key == 'Enter' && search()
-})
+searchField.addEventListener("keypress", function (event) {
+  event.key == "Enter" && search();
+});
 // Trigger image searching
-const search = ()=> {
-  if (searchField.value != '') {
-    document.querySelector('.main').style.display = 'none';
+const search = () => {
+  if (searchField.value != "") {
+    document.querySelector(".main").style.display = "none";
     clearInterval(timer);
-    getImages(searchField.value)
+    getImages(searchField.value);
     sliders.length = 0;
-    searchField.value = '';
+    searchField.value = "";
   } else {
-    alert('Please search anything')
+    alert("Please search anything");
   }
-}
+};
 
-sliderBtn.addEventListener('click', function () {
-  createSlider()
-  document.getElementById('duration').value = ''
-})
+sliderBtn.addEventListener("click", function () {
+  createSlider();
+  document.getElementById("duration").value = "";
+});
 // Show and hide loader
-const showLoader = condition => {
-  if(condition){
-    loaderArea.style.display = 'flex'
-    imagesArea.style.display = 'none';
-  } else {
-    loaderArea.style.display = 'none'
-    imagesArea.style.display = 'block';
-  }
-}
-// Show and hide not found message
-const showNotFoundMessage = condition => {
+const showLoader = (condition) => {
   if (condition) {
-    loaderArea.style.display = 'none'
-    imagesArea.style.display = 'none';
-    notFoundArea.style.display = 'flex'
+    loaderArea.style.display = "flex";
+    imagesArea.style.display = "none";
   } else {
-    notFoundArea.style.display = 'none'
+    loaderArea.style.display = "none";
+    imagesArea.style.display = "block";
   }
-}
+};
+// Show and hide not found message
+const showNotFoundMessage = (condition) => {
+  if (condition) {
+    loaderArea.style.display = "none";
+    imagesArea.style.display = "none";
+    notFoundArea.style.display = "flex";
+  } else {
+    notFoundArea.style.display = "none";
+  }
+};
 // Close slider after clicking back button
-const closeSlider = ()=> {
-  document.querySelector('.main').style.display = 'none';
-  imagesArea.style.display = 'block';
+const closeSlider = () => {
+  document.querySelector(".main").style.display = "none";
+  imagesArea.style.display = "block";
   sliders = [];
   clearInterval(timer);
-  const item = document.getElementsByClassName('added');
-  for (let i = 0; i <= item.length+1; i++) {
-    item[0].classList.remove('added');
+  const item = document.getElementsByClassName("added");
+  for (let i = 0; i <= item.length + 1; i++) {
+    item[0].classList.remove("added");
   }
-}
+};
